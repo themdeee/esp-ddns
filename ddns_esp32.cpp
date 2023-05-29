@@ -92,6 +92,20 @@ String get_global_ipv4_address()
 //     return global_ipv6_address;
 // }
 
+IPv6Address get_global_ipv6_address()
+{
+    esp_ip6_addr_t ipv6_address;
+    
+    esp_netif_t* get_esp_interface_netif(esp_interface_t interface);
+    
+    if(esp_netif_get_ip6_global(get_esp_interface_netif(ESP_IF_WIFI_STA), &ipv6_address))
+    {
+        return IPv6Address();
+    }
+    
+    return IPv6Address(ipv6_address.addr);
+}
+
 void update_dns_record(String name, String ip_address, uint8_t version)
 {
     HTTPClient http;

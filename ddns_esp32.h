@@ -23,6 +23,8 @@ extern String web_get_global_ipv6_address;
 
 String get_global_ipv4_address();
 
+IPv6Address get_global_ipv6_address();
+
 void update_dns_record(String name, String ip_address, uint8_t version);
 
 #endif
