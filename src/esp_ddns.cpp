@@ -54,9 +54,9 @@ String get_root_domain(String sub_domain)
     
     std::smatch matches;
     std::string domain(sub_domain.c_str());
-    std::regex pattern("^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,61}[a-zA-Z0-9]\\.([a-zA-Z0-9][-a-zA-Z0-9]{0,61}[a-zA-Z0-9]\\.[a-zA-Z0-9][-a-zA-Z0-9]{0,61}[a-zA-Z0-9])$");
+    std::regex regex_sub_domain(R"(^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,61}[a-zA-Z0-9]\.([a-zA-Z0-9][-a-zA-Z0-9]{0,61}[a-zA-Z0-9]\.[a-zA-Z0-9][-a-zA-Z0-9]{0,61}[a-zA-Z0-9])$)");
 
-    if (std::regex_search(domain, matches, pattern))
+    if (std::regex_search(domain, matches, regex_sub_domain))
     {
         root_domain = String(matches[1].str().c_str());
     }
@@ -198,11 +198,11 @@ void update_dns_record(String sub_domain, String Authorization, String ip_addres
         
         if (version == 4)
         {
-            content = "{\"type\":\"A\",\"name\":\"" + sub_domain + "\",\"ttl\":1,\"proxied\":false,\"content\":\"" + ip_address + "\"}";
+            content = R"({"type":"A","name":")" + sub_domain + R"(","ttl":1,"proxied":false,"content":")" + ip_address + R"("})";
         }
         if (version == 6)
         {
-            content = "{\"type\":\"AAAA\",\"name\":\"" + sub_domain + "\",\"ttl\":1,\"proxied\":false,\"content\":\"" + ip_address + "\"}";
+            content = R"({"type":"AAAA","name":")" + sub_domain + R"(","ttl":1,"proxied":false,"content":")" + ip_address + R"("})";
         }
 
         Serial.println(content);
