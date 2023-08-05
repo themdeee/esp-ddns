@@ -182,7 +182,28 @@ String get_sub_domain_id(String sub_domain, String Authorization)
     return sub_domain_id;
 }
 
-void update_dns_record(String sub_domain, String Authorization, String ip_address, uint8_t version)
+String get_dns_record_type(String ip_address)
+{
+    std::regex ipv4_regex(R"(^((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$)");
+    std::regex ipv6_regex(R"(^((([0-9A-Fa-f]{1,4}:){1,6}:)|(([0-9A-Fa-f]{1,4}:){7}))([0-9A-Fa-f]{1,4})$)");
+
+    if (std::regex_match(ip_address.c_str(), ipv4_regex))
+    {
+        return "A";
+    }
+    else if (std::regex_match(ip_address.c_str(), ipv6_regex))
+    {
+        return "AAAA";
+    }
+    else
+    {
+        Serial.println("Invalid IP address");
+        
+        return "";
+    }
+}
+
+void update_dns_record(String sub_domain, String Authorization, String ip_address)
 {
     if (WiFi.status() == WL_CONNECTED)
     {
@@ -194,17 +215,8 @@ void update_dns_record(String sub_domain, String Authorization, String ip_addres
         http.addHeader("Content-Type", "application/json");
         http.addHeader("Authorization", Authorization);
         
-        String content = "";
+        String content = R"({"type":")" + get_dns_record_type(ip_address) + R"(","name":")" + sub_domain + R"(","ttl":1,"proxied":false,"content":")" + ip_address + R"("})";
         
-        if (version == 4)
-        {
-            content = R"({"type":"A","name":")" + sub_domain + R"(","ttl":1,"proxied":false,"content":")" + ip_address + R"("})";
-        }
-        if (version == 6)
-        {
-            content = R"({"type":"AAAA","name":")" + sub_domain + R"(","ttl":1,"proxied":false,"content":")" + ip_address + R"("})";
-        }
-
         Serial.println(content);
 
         uint16_t http_response_code = http.PUT(content);
