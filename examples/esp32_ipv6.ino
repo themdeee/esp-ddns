@@ -25,7 +25,7 @@ void setup()
     Serial.println("Connected to the WiFi network");
     Serial.println(WiFi.localIPv6());
 
-    update_dns_record(sub_domain, Authorization, get_global_ipv6_address().toString(), 6);
+    update_dns_record(sub_domain, Authorization, get_global_ipv6_address().toString());
 }
 
 void loop()

@@ -22,7 +22,7 @@ void setup()
     Serial.println("Connected to the WiFi network");
     Serial.println(WiFi.localIP());
 
-    update_dns_record(sub_domain, Authorization, get_global_ipv4_address(), 4);
+    update_dns_record(sub_domain, Authorization, get_global_ipv4_address());
 }
 
 void loop()
