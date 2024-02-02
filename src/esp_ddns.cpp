@@ -92,7 +92,7 @@ String get_root_domain_id(String root_domain, String Authorization)
         Serial.print("Response: ");
         Serial.println(response);
         
-        DynamicJsonDocument data(4096);
+        JsonDocument data;
         DeserializationError error = deserializeJson(data, response);
 
         if (error)
@@ -149,7 +149,7 @@ String get_sub_domain_id(String sub_domain, String Authorization)
         Serial.print("Response: ");
         Serial.println(response);
 
-        DynamicJsonDocument data(8192);
+        JsonDocument data;
         DeserializationError error = deserializeJson(data, response);
 
         if (error)
