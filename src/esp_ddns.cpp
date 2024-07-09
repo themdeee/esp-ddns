@@ -34,19 +34,51 @@ String get_global_ipv4_address(void)
     return global_ipv4_address;
 }
 
-IPv6Address get_global_ipv6_address(void)
-{
-    esp_ip6_addr_t ipv6_address;
-    
-    esp_netif_t* get_esp_interface_netif(esp_interface_t interface);
-    
-    if(esp_netif_get_ip6_global(get_esp_interface_netif(ESP_IF_WIFI_STA), &ipv6_address))
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+    String get_global_ipv6_address(void)
     {
-        return IPv6Address();
+        String global_ipv6_address = "";
+        
+        if (WiFi.status() == WL_CONNECTED)
+        {
+            HTTPClient http;
+            
+            http.begin(api_get_global_ipv6_address.c_str());
+
+            uint16_t http_response_code = http.GET();
+            String response = http.getString();
+
+            http.end();
+
+            Serial.print("HTTP Response Code: ");
+            Serial.println(http_response_code);
+            Serial.print("Response: ");
+            Serial.println(response);
+
+            global_ipv6_address = response;
+        }
+        else
+        {
+            Serial.println("Wifi Disconnected");
+        }
+
+        return global_ipv6_address;
     }
-    
-    return IPv6Address(ipv6_address.addr);
-}
+#else
+    IPv6Address get_global_ipv6_address(void)
+    {
+        esp_ip6_addr_t ipv6_address;
+        
+        esp_netif_t* get_esp_interface_netif(esp_interface_t interface);
+        
+        if(esp_netif_get_ip6_global(get_esp_interface_netif(ESP_IF_WIFI_STA), &ipv6_address))
+        {
+            return IPv6Address();
+        }
+        
+        return IPv6Address(ipv6_address.addr);
+    }
+#endif
 
 String get_root_domain(String sub_domain)
 {
